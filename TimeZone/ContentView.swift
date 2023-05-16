@@ -29,62 +29,78 @@ struct ContentView: View {
     @State var textColor = Color.black
     
     var body: some View {
-        VStack {
-            WidgetView(identifier: $identifier,
-                       backgroundColor: $backgroundColor,
-                       textColor: $textColor)
-            .frame(width: ScreenSize.width/2.2, height: ScreenSize.width/2.2, alignment: .center)
-            .cornerRadius(15)
-            .shadow(radius: 12)
-            .padding(50)
-            Form {
-                Section("Please select timezone") {
-                    Menu(identifier) {
-                        ForEach(knownTimeZoneIdentifiers, id: \.self) { identifier in
-                            Button {
-                                self.identifier = identifier
-                                UserDefaults.standard.set(identifier, forKey: "selectedTimeZone")
-                                WidgetCenter.shared.reloadAllTimelines()
-                            } label: {
-                                Text(identifier)
+        
+        ZStack {
+            LinearGradient(
+                gradient: Gradient(colors: [Color.lightGray, Color.white]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            VStack {
+                WidgetView(identifier: $identifier,
+                           backgroundColor: $backgroundColor,
+                           textColor: $textColor)
+                .frame(width: ScreenSize.width/2.2, height: ScreenSize.width/2.2, alignment: .center)
+                .cornerRadius(15)
+                .shadow(radius: 12)
+                .padding(.top, 50)
+                .padding(50)
+                List {
+                    Section("Please select timezone") {
+                        Menu(identifier) {
+                            ForEach(knownTimeZoneIdentifiers, id: \.self) { identifier in
+                                Button {
+                                    self.identifier = identifier
+                                    UserDefaults.standard.set(identifier, forKey: "selectedTimeZone")
+                                    UserDefaults.standard.synchronize()
+                                    WidgetCenter.shared.reloadAllTimelines()
+                                } label: {
+                                    Text(identifier)
+                                }
                             }
                         }
+                        .foregroundColor(.primary)
                     }
-                    .foregroundColor(.primary)
-                }
-                
-                Section(header: Text("Please select background color")) {
-                    Picker(
-                        selection: $backgroundColor,
-                        label: HStack {
-                            Image(systemName: "rectangle.fill")
-                            Text("Background Color").bold()
+                    
+                    
+                    Section(header: Text("Please select background color")) {
+                        Picker(
+                            selection: $backgroundColor,
+                            label: HStack {
+                                Image(systemName: "rectangle.fill")
+                                Text("Background Color").bold()
+                            }
+                        ) {
+                            ForEach(colors.dropLast(), id: \.self) { color in
+                                Text(color.description.uppercased())
+                            }
                         }
-                    ) {
-                        ForEach(colors.dropLast(), id: \.self) { color in
-                            Text(color.description.uppercased())
-                        }
+                        .foregroundColor(backgroundColor)
                     }
-                    .foregroundColor(backgroundColor)
-                }
-                
-                Section(header: Text("Please select text color")) {
-                    Picker(
-                        selection: $textColor,
-                        label: HStack {
-                            Image(systemName: "textformat.size")
-                            Text("Text Color").bold()
+                   
+                    
+                    Section(header: Text("Please select text color")) {
+                        Picker(
+                            selection: $textColor,
+                            label: HStack {
+                                Image(systemName: "textformat.size")
+                                Text("Text Color").bold()
+                            }
+                        ) {
+                            ForEach(colors, id: \.self) { color in
+                                Text(color.description.uppercased())
+                            }
                         }
-                    ) {
-                        ForEach(colors, id: \.self) { color in
-                            Text(color.description.uppercased())
-                        }
+                        .foregroundColor((textColor != Color.white) ? textColor : Color.lightGray)
                     }
-                    .foregroundColor((textColor != Color.white) ? textColor : Color.lightGray)
+                    
                 }
+                .background(.red)
             }
         }
+        .ignoresSafeArea()
     }
+    
 }
 
 struct WidgetView: View {

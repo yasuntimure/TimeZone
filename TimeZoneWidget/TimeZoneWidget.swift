@@ -18,23 +18,26 @@ struct Provider: TimelineProvider {
         let entry = SimpleEntry(date: Date(), identifier: TimeZone.current.identifier, backgroundColor: .orange, textColor: .black)
         completion(entry)
     }
-
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        var entries: [SimpleEntry] = []
-        let currentDate = Date()
-        for minuteOffset in 0 ..< 1440 {
-            let entryDate = Calendar.current.date(byAdding: .minute, value: minuteOffset, to: currentDate)!
-            if let selectedTimeZone = UserDefaults.standard.string(forKey: "selectedTimeZone") {
-                let entry = SimpleEntry(date: entryDate, identifier: selectedTimeZone, backgroundColor: .orange, textColor: .black)
-                entries.append(entry)
-            } else {
-                let entry = SimpleEntry(date: entryDate, identifier: TimeZone.current.identifier, backgroundColor: .orange, textColor: .black)
-                entries.append(entry)
-            }
-        }
-        let timeline = Timeline(entries: entries, policy: .atEnd)
-        completion(timeline)
-    }
+    
+    func getTimeline(in context: Context, completion: @escaping (Timeline<SimpleEntry>) -> Void) {
+           var entries: [SimpleEntry] = []
+           let currentDate = Date()
+           
+           for minuteOffset in 0..<60 {
+               let futureDate = Calendar.current.date(byAdding: .minute, value: minuteOffset, to: currentDate)!
+        
+               if let selectedTimeZone = UserDefaults.standard.string(forKey: "selectedTimeZone") {
+                   let entry = SimpleEntry(date: futureDate, identifier: selectedTimeZone, backgroundColor: .orange, textColor: .black)
+                   entries.append(entry)
+               } else {
+                   let entry = SimpleEntry(date: futureDate, identifier: TimeZone.current.identifier, backgroundColor: .orange, textColor: .black)
+                   entries.append(entry)
+               }
+           }
+           
+           let timeline = Timeline(entries: entries, policy: .after(Calendar.current.date(byAdding: .minute, value: 1, to: currentDate)!))
+           completion(timeline)
+       }
 }
 
 struct SimpleEntry: TimelineEntry {
@@ -47,7 +50,7 @@ struct SimpleEntry: TimelineEntry {
 struct TimeZoneWidgetEntryView : View {
     
     var entry: Provider.Entry
-
+    
     var body: some View {
         ZStack {
             ContainerRelativeShape()
@@ -67,7 +70,7 @@ struct TimeZoneWidgetEntryView : View {
 
 struct TimeZoneWidget: Widget {
     let kind: String = "TimeZoneWidget"
-
+    
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             TimeZoneWidgetEntryView(entry: entry)
