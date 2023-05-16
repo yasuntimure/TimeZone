@@ -11,11 +11,11 @@ import SwiftUI
 struct Provider: TimelineProvider {
         
     func placeholder(in context: Context) -> SimpleEntry {
-        return SimpleEntry(date: Date(), timeZone: TimeZoneIdentifier(identifier: TimeZone.current.identifier), backgroundColor: .orange, textColor: .black)
+        return SimpleEntry(date: Date(), identifier: TimeZone.current.identifier, backgroundColor: .orange, textColor: .black)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), timeZone: TimeZoneIdentifier(identifier: TimeZone.current.identifier), backgroundColor: .orange, textColor: .black)
+        let entry = SimpleEntry(date: Date(), identifier: TimeZone.current.identifier, backgroundColor: .orange, textColor: .black)
         completion(entry)
     }
 
@@ -24,11 +24,14 @@ struct Provider: TimelineProvider {
         let currentDate = Date()
         for minuteOffset in 0 ..< 1440 {
             let entryDate = Calendar.current.date(byAdding: .minute, value: minuteOffset, to: currentDate)!
-            let selectedTimeZone = ContentView().selectedTimeZoneIdentifier.identifier // UserDefaults.standard.string(forKey: "selectedTimeZone") ?? TimeZone.current.identifier
-            let entry = SimpleEntry(date: entryDate, timeZone: TimeZoneIdentifier(identifier: selectedTimeZone), backgroundColor: .orange, textColor: .black)
-            entries.append(entry)
+            if let selectedTimeZone = UserDefaults.standard.string(forKey: "selectedTimeZone") {
+                let entry = SimpleEntry(date: entryDate, identifier: selectedTimeZone, backgroundColor: .orange, textColor: .black)
+                entries.append(entry)
+            } else {
+                let entry = SimpleEntry(date: entryDate, identifier: TimeZone.current.identifier, backgroundColor: .orange, textColor: .black)
+                entries.append(entry)
+            }
         }
-
         let timeline = Timeline(entries: entries, policy: .atEnd)
         completion(timeline)
     }
@@ -36,7 +39,7 @@ struct Provider: TimelineProvider {
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
-    let timeZone: TimeZoneIdentifier
+    let identifier: String
     let backgroundColor: Color
     let textColor: Color
 }
@@ -50,10 +53,10 @@ struct TimeZoneWidgetEntryView : View {
             ContainerRelativeShape()
                 .fill(.orange.gradient)
             VStack {
-                Text(entry.timeZone.identifier.getCityName())
+                Text(entry.identifier.getCityName())
                     .font(.title3)
                     .padding(.trailing, 25)
-                Text(entry.timeZone.identifier.getCurrentTime())
+                Text(entry.identifier.getCurrentTime())
                     .font(.largeTitle).bold()
                     .padding(.top, -5)
             }
@@ -78,7 +81,7 @@ struct TimeZoneWidget: Widget {
 
 struct TimeZoneWidget_Previews: PreviewProvider {
     static var previews: some View {
-        TimeZoneWidgetEntryView(entry: SimpleEntry(date: Date(), timeZone: TimeZoneIdentifier(identifier: TimeZone.current.identifier), backgroundColor: .orange, textColor: .black))
+        TimeZoneWidgetEntryView(entry: SimpleEntry(date: Date(), identifier: TimeZone.current.identifier, backgroundColor: .orange, textColor: .black))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
     }
 }

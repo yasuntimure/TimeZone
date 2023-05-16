@@ -11,8 +11,7 @@ import WidgetKit
 
 struct ContentView: View {
     
-    let timeZoneIdentifiers = TimeZone.knownTimeZoneIdentifiers
-        .map { TimeZoneIdentifier(identifier: $0) }
+    let knownTimeZoneIdentifiers: [String] = TimeZone.knownTimeZoneIdentifiers
     
     let colors = [Color.red,
                   Color.green,
@@ -25,32 +24,38 @@ struct ContentView: View {
                   Color.black,
                   Color.white]
     
-    @State var selectedTimeZoneIdentifier = TimeZoneIdentifier(identifier: TimeZone.current.identifier)
-    @State var selectedBackgroundColor = Color.orange
-    @State var selectedTextColor = Color.black
+    @State var identifier = TimeZone.current.identifier
+    @State var backgroundColor = Color.orange
+    @State var textColor = Color.black
     
     var body: some View {
         VStack {
-            WidgetView(selectedTimeZoneIdentifier: $selectedTimeZoneIdentifier,
-                       selectedBackgroundColor: $selectedBackgroundColor,
-                       selectedTextColor: $selectedTextColor)
+            WidgetView(identifier: $identifier,
+                       backgroundColor: $backgroundColor,
+                       textColor: $textColor)
             .frame(width: ScreenSize.width/2.2, height: ScreenSize.width/2.2, alignment: .center)
             .cornerRadius(15)
             .shadow(radius: 12)
             .padding(50)
             Form {
                 Section("Please select timezone") {
-                    Picker(selection: $selectedTimeZoneIdentifier, label: Text("Timezone")) {
-                        ForEach(timeZoneIdentifiers) { identifier in
-                            Text(identifier.identifier)
-                                .tag(identifier)
+                    Menu(identifier) {
+                        ForEach(knownTimeZoneIdentifiers, id: \.self) { identifier in
+                            Button {
+                                self.identifier = identifier
+                                UserDefaults.standard.set(identifier, forKey: "selectedTimeZone")
+                                WidgetCenter.shared.reloadAllTimelines()
+                            } label: {
+                                Text(identifier)
+                            }
                         }
                     }
+                    .foregroundColor(.primary)
                 }
                 
                 Section(header: Text("Please select background color")) {
                     Picker(
-                        selection: $selectedBackgroundColor,
+                        selection: $backgroundColor,
                         label: HStack {
                             Image(systemName: "rectangle.fill")
                             Text("Background Color").bold()
@@ -60,12 +65,12 @@ struct ContentView: View {
                             Text(color.description.uppercased())
                         }
                     }
-                    .foregroundColor(selectedBackgroundColor)
+                    .foregroundColor(backgroundColor)
                 }
                 
                 Section(header: Text("Please select text color")) {
                     Picker(
-                        selection: $selectedTextColor,
+                        selection: $textColor,
                         label: HStack {
                             Image(systemName: "textformat.size")
                             Text("Text Color").bold()
@@ -75,7 +80,7 @@ struct ContentView: View {
                             Text(color.description.uppercased())
                         }
                     }
-                    .foregroundColor((selectedTextColor != Color.white) ? selectedTextColor : Color.lightGray)
+                    .foregroundColor((textColor != Color.white) ? textColor : Color.lightGray)
                 }
             }
         }
@@ -84,23 +89,23 @@ struct ContentView: View {
 
 struct WidgetView: View {
     
-    @Binding var selectedTimeZoneIdentifier: TimeZoneIdentifier
-    @Binding var selectedBackgroundColor: Color
-    @Binding var selectedTextColor: Color
+    @Binding var identifier: String
+    @Binding var backgroundColor: Color
+    @Binding var textColor: Color
     
     var body: some View {
         ZStack {
             ContainerRelativeShape()
-                .fill(selectedBackgroundColor.gradient)
+                .fill(backgroundColor.gradient)
             VStack {
-                Text(selectedTimeZoneIdentifier.identifier.getCityName())
+                Text(identifier.getCityName())
                     .font(.title3)
                     .padding(.trailing, 25)
-                Text(selectedTimeZoneIdentifier.identifier.getCurrentTime())
+                Text(identifier.getCurrentTime())
                     .font(.largeTitle).bold()
                     .padding(.top, -5)
             }
-            .foregroundColor(selectedTextColor)
+            .foregroundColor(textColor)
         }
     }
 }
@@ -110,19 +115,6 @@ struct WidgetView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
-    }
-}
-
-struct TimeZoneIdentifier: Identifiable, Hashable {
-    let id = UUID()
-    let identifier: String
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(identifier)
-    }
-    
-    static func == (lhs: TimeZoneIdentifier, rhs: TimeZoneIdentifier) -> Bool {
-        return lhs.identifier == rhs.identifier
     }
 }
 
