@@ -9,11 +9,11 @@ import WidgetKit
 import SwiftUI
 
 struct Provider: TimelineProvider {
-        
+    
     func placeholder(in context: Context) -> SimpleEntry {
         return SimpleEntry(date: Date(), identifier: TimeZone.current.identifier, backgroundColor: .orange, textColor: .black)
     }
-
+    
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
         let entry = SimpleEntry(date: Date(), identifier: TimeZone.current.identifier, backgroundColor: .orange, textColor: .black)
         completion(entry)
@@ -55,11 +55,10 @@ struct TimeZoneWidgetEntryView : View {
         ZStack {
             ContainerRelativeShape()
                 .fill(.orange.gradient)
-            VStack {
+            VStack (alignment: .leading) {
                 Text(entry.identifier.getCityName())
                     .font(.title3)
-                    .padding(.trailing, 25)
-                Text(entry.identifier.getCurrentTime())
+                Text(entry.identifier.getCurrentTime(date: entry.date))
                     .font(.largeTitle).bold()
                     .padding(.top, -5)
             }

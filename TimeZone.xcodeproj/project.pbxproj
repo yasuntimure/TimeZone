@@ -124,10 +124,28 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D05AFEC32A14678C00058814 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				D0E81E8F2A0DC6D600CEFC07 /* Extension+String.swift */,
+				D0E81E932A0DCF9C00CEFC07 /* Extension+Color.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		D05AFEC42A14679C00058814 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				D0E81E8D2A0DC60A00CEFC07 /* ScreenSize.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		D0BA512C2A01940C00491811 = {
 			isa = PBXGroup;
 			children = (
 				D0BA51372A01940C00491811 /* TimeZone */,
+				D0BA513C2A01940C00491811 /* Assets.xcassets */,
 				D0BA51482A01940C00491811 /* TimeZoneTests */,
 				D0BA51522A01940C00491811 /* TimeZoneUITests */,
 				D0BA516C2A01942E00491811 /* TimeZoneWidget */,
@@ -152,11 +170,9 @@
 			children = (
 				D0BA51382A01940C00491811 /* TimeZoneApp.swift */,
 				D0BA513A2A01940C00491811 /* ContentView.swift */,
-				D0BA513C2A01940C00491811 /* Assets.xcassets */,
 				D0BA513E2A01940C00491811 /* Preview Content */,
-				D0E81E8D2A0DC60A00CEFC07 /* ScreenSize.swift */,
-				D0E81E8F2A0DC6D600CEFC07 /* Extension+String.swift */,
-				D0E81E932A0DCF9C00CEFC07 /* Extension+Color.swift */,
+				D05AFEC42A14679C00058814 /* Utils */,
+				D05AFEC32A14678C00058814 /* Extensions */,
 			);
 			path = TimeZone;
 			sourceTree = "<group>";

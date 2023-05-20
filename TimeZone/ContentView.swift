@@ -71,7 +71,6 @@ struct ContentView: View {
                 .foregroundColor(backgroundColor)
             }
             
-            
             Section("Please select text color") {
                 Picker(
                     selection: $textColor,
@@ -87,7 +86,7 @@ struct ContentView: View {
                 .foregroundColor((textColor != Color.white) ? textColor : Color.lightGray)
             }
         }
-        
+
     }
     
 }
@@ -106,7 +105,7 @@ struct WidgetView: View {
                 Text(identifier.getCityName())
                     .font(.title3)
                     .padding(.trailing, 25)
-                Text(identifier.getCurrentTime())
+                Text(identifier.getCurrentTime(date: Date()))
                     .font(.largeTitle).bold()
                     .padding(.top, -5)
             }
@@ -115,15 +114,8 @@ struct WidgetView: View {
     }
 }
 
-
-
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
 }
-
-
-
-
-

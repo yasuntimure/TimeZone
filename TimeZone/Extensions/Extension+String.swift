@@ -9,13 +9,12 @@ import Foundation
 
 extension String {
     
-    func getCurrentTime() -> String {
+    func getCurrentTime(date: Date) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm"
         let timeZone = TimeZone(identifier: self)
         dateFormatter.timeZone = timeZone
-        let currentDate = Date()
-        let timeString = dateFormatter.string(from: currentDate)
+        let timeString = dateFormatter.string(from: date)
         return timeString
     }
     
